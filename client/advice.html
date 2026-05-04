@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Советы дня</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .advice-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .advice-text {
+            font-size: 1.5em;
+            color: #333;
+            margin: 30px 0;
+            line-height: 1.4;
+            min-height: 120px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+        .save-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .saved-advices {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .saved-advices h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .advice-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 0.5s;
+        }
+        .advice-item p {
+            flex: 1;
+            margin-right: 15px;
+        }
+        .delete-btn {
+            background: #dc3545;
+            padding: 5px 15px;
+            font-size: 12px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .empty {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+        @media (max-width: 600px) {
+            .advice-text { font-size: 1.2em; }
+            button { padding: 10px 20px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="advice-card">
+            <h1>Мудрый совет</h1>
+            <div class="advice-text" id="advice">Нажмите кнопку, чтобы получить совет</div>
+            <button onclick="getAdvice()">Получить совет</button>
+            <button class="save-btn" onclick="saveCurrentAdvice()">💾 Сохранить совет</button>
+        </div>
+        
+        <div class="saved-advices">
+            <h2>Сохраненные советы</h2>
+            <div id="saved-list"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentAdvice = null;
+        
+        async function getAdvice() {
+            try {
+                const response = await fetch('https://api.adviceslip.com/advice');
+                const data = await response.json();
+                currentAdvice = data.slip;
+                document.getElementById('advice').innerHTML = `💡 ${currentAdvice.advice}`;
+            } catch (error) {
+                document.getElementById('advice').innerHTML = 'Ошибка загрузки совета';
+            }
+        }
+        
+        function saveCurrentAdvice() {
+            if (!currentAdvice) {
+                alert('Сначала получите совет!');
+                return;
+            }
+            
+            let saved = localStorage.getItem('savedAdvices');
+            saved = saved ? JSON.parse(saved) : [];
+            
+            if (!saved.some(advice => advice.id === currentAdvice.id)) {
+                saved.push(currentAdvice);
+                localStorage.setItem('savedAdvices', JSON.stringify(saved));
+                displaySavedAdvices();
+                showNotification('Совет сохранен!');
+            } else {
+                showNotification('Этот совет уже сохранен!', 'warning');
+            }
+        }
+        
+        function deleteAdvice(id) {
+            let saved = JSON.parse(localStorage.getItem('savedAdvices') || '[]');
+            saved = saved.filter(advice => advice.id !== id);
+            localStorage.setItem('savedAdvices', JSON.stringify(saved));
+            displaySavedAdvices();
+            showNotification('Совет удален');
+        }
+        
+        function displaySavedAdvices() {
+            const saved = JSON.parse(localStorage.getItem('savedAdvices') || '[]');
+            const container = document.getElementById('saved-list');
+            
+            if (saved.length === 0) {
+                container.innerHTML = '<div class="empty">Нет сохраненных советов</div>';
+                return;
+            }
+            
+            container.innerHTML = saved.map(advice => `
+                <div class="advice-item">
+                    <p>${advice.advice}</p>
+                    <button class="delete-btn" onclick="deleteAdvice(${advice.id})">✖ Удалить</button>
+                </div>
+            `).join('');
+        }
+        
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#28a745' : '#ffc107'};
+                color: white;
+                padding: 10px 20px;
+                border-radius: 5px;
+                z-index: 1000;
+                animation: fadeIn 0.5s;
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 2000);
+        }
+        
+        displaySavedAdvices();
+        
+        setTimeout(() => getAdvice(), 500);
+    </script>
+</body>
+</html>
