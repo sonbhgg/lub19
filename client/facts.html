@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Факты о животных</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .fact-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        h1 {
+            color: #f12711;
+            margin-bottom: 20px;
+        }
+        .animal-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .animal-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.3s;
+        }
+        .animal-btn:hover {
+            transform: translateY(-3px);
+        }
+        .fact-text {
+            font-size: 1.3em;
+            color: #333;
+            margin: 30px 0;
+            line-height: 1.5;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #f12711;
+        }
+        .fun-fact {
+            font-size: 1.1em;
+            color: #666;
+            margin-top: 10px;
+        }
+        @media (max-width: 600px) {
+            .fact-text { font-size: 1.1em; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="fact-card">
+            <h1>Удивительные факты о животных</h1>
+            
+            <div class="animal-buttons">
+                <button class="animal-btn" onclick="getAnimalFact('cat')">Кошки</button>
+                <button class="animal-btn" onclick="getAnimalFact('dog')">Собаки</button>
+                <button class="animal-btn" onclick="getAnimalFact('elephant')">Слоны</button>
+                <button class="animal-btn" onclick="getAnimalFact('dolphin')">Дельфины</button>
+                <button class="animal-btn" onclick="getAnimalFact('panda')">Панды</button>
+                <button class="animal-btn" onclick="getAnimalFact('penguin')">Пингвины</button>
+            </div>
+            
+            <div id="fact-display" class="fact-text">
+                Выберите животное, чтобы узнать интересный факт
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const animalFacts = {
+            cat: [
+                "Кошки спят около 16 часов в день — это примерно 2/3 их жизни!",
+                "У кошек 32 мышцы, контролирующие внешнее ухо (у человека их только 6).",
+                "Кошки могут издавать около 100 различных звуков (собаки — только 10).",
+                "Группа кошек называется clowder."
+            ],
+            dog: [
+                "Нос собаки уникален, как отпечаток пальца у человека.",
+                "Собаки видят мир в желто-синих тонах, но не различают красный и зеленый.",
+                "Средняя продолжительность жизни собаки — 10-13 лет.",
+                "Собаки могут понимать до 250 слов и жестов."
+            ],
+            elephant: [
+                "Слоны — единственные млекопитающие, которые не умеют прыгать.",
+                "Слоны могут «слышать» ногами, улавливая вибрации земли.",
+                "Мозг слона весит около 5 кг — больше, чем у любого другого животного на суше.",
+                "Слоны узнают себя в зеркале — это признак самосознания."
+            ],
+            dolphin: [
+                "Дельфины спят с одним открытым глазом и одним работающим полушарием мозга.",
+                "У каждого дельфина есть уникальное имя, на которое он откликается.",
+                "Дельфины могут узнавать себя в зеркале.",
+                "Дельфины — одни из немногих животных, которые занимаются сексом для удовольствия."
+            ],
+            panda: [
+                "Большие панды тратят до 14 часов в день на еду бамбука.",
+                "У панд есть дополнительный «палец», который помогает им держать бамбук.",
+                "Новорожденные панды весят всего около 100 граммов — как чашка йогурта.",
+                "Панды — символ Всемирного фонда дикой природы (WWF)."
+            ],
+            penguin: [
+                "Императорские пингвины могут задерживать дыхание под водой до 20 минут.",
+                "Пингвины предлагают камешки в знак любви и строят из них гнезда.",
+                "Пингвины не умеют летать, но отлично плавают — до 40 км/ч.",
+                "У пингвинов есть колени, хотя их не видно под перьями."
+            ]
+        };
+        
+        function getAnimalFact(animal) {
+            const facts = animalFacts[animal];
+            const randomFact = facts[Math.floor(Math.random() * facts.length)];
+            
+            const animalNames = {
+                cat: 'Кошка', dog: 'Собака', elephant: 'Слон',
+                dolphin: 'Дельфин', panda: 'Панда', penguin: 'Пингвин'
+            };
+            
+            document.getElementById('fact-display').innerHTML = `
+                <strong>🐘${animalNames[animal]}</strong><br><br>
+                📖 ${randomFact}
+                <div class="fun-fun">Знаете ли вы?</div>
+            `;
+        }
+    </script>
+</body>
+</html>
