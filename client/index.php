@@ -3,275 +3,311 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Тестирование</title>
+    <title>API</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+        body { margin: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .api-section { background: white; padding: 20px; margin-bottom: 20px; }
+        h1 { text-align: center; }
+        h2 { margin-top: 0; }
+        button { background: blue; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: white; color: blue; }
+        input, select { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 4px; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        .result { margin-top: 10px; }
+        .error { color: red; }
+        .success { color: green; }
+        .weather-widget .temperature {
+            font-size: 42px;
+            font-weight: bold;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        h1 {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-        .api-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .api-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease;
-        }
-        .api-card:hover {
-            transform: translateY(-5px);
-        }
-        .api-card h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
-        .api-card button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 10px;
-            transition: opacity 0.3s;
-        }
-        .api-card button:hover {
-            opacity: 0.9;
-        }
-        .api-card input, .api-card select {
-            width: 100%;
-            padding: 8px;
+        .weather-widget .condition {
+            font-size: 18px;
             margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
         }
-        .result {
-            background: #f4f4f4;
-            border-radius: 5px;
-            padding: 10px;
-            margin-top: 10px;
-            font-size: 14px;
-            word-wrap: break-word;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        .weather-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        .weather-card h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-        .flex {
+        .weather-flex {
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
         }
-        pre {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
+        .weather-details {
+            text-align: right;
         }
-        @media (max-width: 768px) {
-            .api-grid {
-                grid-template-columns: 1fr;
-            }
+        .refresh-weather {
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <h1>Тестирование API</h1>
         
-        <div class="api-grid">
-            <div class="api-card">
-                <h3>Дата и время</h3>
-                <button onclick="testAPI('day')">Текущий день</button>
-                <button onclick="testAPI('month')">Текущий месяц</button>
-                <button onclick="testAPI('year')">Текущий год</button>
-                <div id="datetime-result" class="result"></div>
+        <div class="api-section">
+            <h2>Погода</h2>
+            <div id="weatherBlock" class="weather-widget">
+                <div style="text-align: center;">Загрузка погоды...</div>
             </div>
+        </div>
+        
+        <div class="api-section">
+            <h2>1. Текущая дата и время</h2>
+            <button onclick="testAPI('/day.php')">Текущий день</button>
+            <button onclick="testAPI('/month.php')">Текущий месяц</button>
+            <button onclick="testAPI('/year.php')">Текущий год</button>
+            <div id="result1" class="result"></div>
+        </div>
+        
+        <div class="api-section">
+            <h2>2. День недели по дате</h2>
+            <input type="date" id="weekdayDate" value="2024-12-25">
+            <button onclick="getWeekday()">Получить день недели</button>
+            <div id="result2" class="result"></div>
+        </div>
+        
+        <div class="api-section">
+            <h2>3. Разница между датами</h2>
+            <input type="date" id="date1" value="2024-01-01">
+            <input type="date" id="date2" value="2024-12-31">
+            <button onclick="getDateDiff()">Рассчитать разницу</button>
+            <div id="result3" class="result"></div>
+        </div>
+        
+        <div class="api-section">
+            <h2>4. Города по стране</h2>
+            <input type="text" id="country" placeholder="Введите страну" value="Russia">
+            <button onclick="getCities()">Получить города</button>
+            <div id="result4" class="result"></div>
+        </div>
+        
+        <div class="api-section">
+            <h2>CRUD операции с записями</h2>
             
-            <div class="api-card">
-                <h3>День недели</h3>
-                <input type="date" id="weekday-date">
-                <button onclick="getWeekday()">Получить день недели</button>
-                <div id="weekday-result" class="result"></div>
-            </div>
+            <h3>Получить все записи</h3>
+            <button onclick="getAllRecords()">Показать все</button>
             
-            <div class="api-card">
-                <h3>Разница между датами</h3>
-                <input type="date" id="date1">
-                <input type="date" id="date2">
-                <button onclick="getDateDiff()">Рассчитать разницу</button>
-                <div id="diff-result" class="result"></div>
-            </div>
+            <h3>Получить запись по ID</h3>
+            <input type="number" id="getRecordId" placeholder="ID">
+            <button onclick="getRecord()">Получить</button>
             
-            <div class="api-card">
-                <h3>Города по стране</h3>
-                <select id="country">
-                    <option value="Россия">Россия</option>
-                    <option value="США">США</option>
-                    <option value="Германия">Германия</option>
-                </select>
-                <button onclick="getCities()">Получить города</button>
-                <div id="cities-result" class="result"></div>
-            </div>
+            <h3>Обновить запись</h3>
+            <input type="number" id="updateId" placeholder="ID">
+            <input type="text" id="updateTitle" placeholder="Новый заголовок">
+            <textarea id="updateContent" placeholder="Новое содержание" rows="3"></textarea>
+            <button onclick="updateRecord()">Обновить</button>
             
-            <div class="api-card">
-                <h3>CRUD Операции</h3>
-                <button onclick="getAllItems()">Все записи</button>
-                <input type="number" id="item-id" placeholder="ID записи">
-                <button onclick="getItem()">Получить запись</button>
-                <button onclick="deleteItem()">Удалить запись</button>
-                <div id="crud-result" class="result"></div>
-            </div>
+            <h3>Удалить запись</h3>
+            <input type="number" id="deleteId" placeholder="ID">
+            <button onclick="deleteRecord()">Удалить</button>
             
-            <div class="api-card">
-                <h3>Погода (СПб)</h3>
-                <button onclick="getWeather()">Получить погоду</button>
-                <div id="weather-result" class="result"></div>
-            </div>
+            <div id="result5" class="result"></div>
         </div>
     </div>
 
     <script>
-        const API_BASE = 'http://api.ponka.ru/public/';
+        const API_BASE = 'http://api.trofimova.com';
+        
+async function loadWeather() {
+    const lat = 59.9386;
+    const lon = 30.2141;
+    
+    try {
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`);
+        const data = await response.json();
+        
+        if (data.current_weather) {
+            const current = data.current_weather;
+            const temperature = Math.round(current.temperature);
+            const windspeed = Math.round(current.windspeed);
+            const weatherCode = current.weathercode;
+            
+            function getWeatherDesc(code) {
+                const codes = {
+                    0: '☀️ Ясно',
+                    1: '🌤️ Малооблачно',
+                    2: '⛅ Переменная облачность',
+                    3: '☁️ Пасмурно',
+                    45: '🌫️ Туман',
+                    48: '❄️🌫️ Туман с изморозью',
+                    51: '🌧️ Легкая морось',
+                    53: '🌧️ Морось',
+                    55: '🌧️ Сильная морось',
+                    61: '🌧️ Небольшой дождь',
+                    63: '🌧️ Дождь',
+                    65: '🌧️ Сильный дождь',
+                    71: '❄️ Небольшой снег',
+                    73: '❄️ Снег',
+                    75: '❄️ Сильный снег',
+                    80: '🌦️ Небольшой ливень',
+                    81: '🌦️ Умеренный ливень',
+                    82: '🌧️💨 Сильный ливень',
+                    85: '❄️🌨️ Небольшой снегопад',
+                    86: '❄️🌨️ Сильный снегопад',
+                    95: '⛈️ Гроза',
+                    96: '⛈️ Гроза с градом',
+                    99: '⛈️💨 Сильная гроза с градом'
+                };
+                return codes[code] || `Код: ${code}`;
+            }
+            
+            const date = new Date(current.time);
+            const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth()+1).toString().padStart(2, '0')}.${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+            
+            document.getElementById('weatherBlock').innerHTML = `
+                <div class="weather-flex">
+                    <div>
+                        <h3 style="margin:0 0 5px 0;">Санкт-Петербург</h3>
+                        <div class="temperature">${temperature}°C</div>
+                        <div class="condition">${getWeatherDesc(weatherCode)}</div>
+                    </div>
+                    <div class="weather-details">
+                        <div>Ветер: ${windspeed} км/ч</div>
+                        <div>${formattedDate}</div>
+                    </div>
+                </div>
+                <button class="refresh-weather" onclick="loadWeather()">Обновить</button>
+            `;
+        } else {
+            document.getElementById('weatherBlock').innerHTML = `
+                <div style="text-align:center; color:#ff9800;">
+                    Не удалось загрузить погоду
+                </div>
+                <button class="refresh-weather" onclick="loadWeather()">Повторить</button>
+            `;
+        }
+    } catch (error) {
+        console.error('Weather error:', error);
+        document.getElementById('weatherBlock').innerHTML = `
+            <div style="text-align:center; color:#ff9800;">
+                Ошибка: ${error.message}
+            </div>
+            <button class="refresh-weather" onclick="loadWeather()">Повторить</button>
+        `;
+    }
+}
         
         async function testAPI(endpoint) {
             try {
-                const response = await fetch(`${API_BASE}${endpoint}.php`);
+                const response = await fetch(API_BASE + endpoint);
                 const data = await response.json();
-                document.getElementById('datetime-result').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                document.getElementById('result1').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
             } catch (error) {
-                document.getElementById('datetime-result').innerHTML = `Ошибка: ${error.message}`;
+                document.getElementById('result1').innerHTML = `<div class="error">Ошибка: ${error.message}</div>`;
             }
         }
         
         async function getWeekday() {
-            const date = document.getElementById('weekday-date').value;
-            if (!date) {
-                alert('Выберите дату');
-                return;
-            }
+            const date = document.getElementById('weekdayDate').value;
             try {
-                const response = await fetch(`${API_BASE}weekday.php?date=${date}`);
+                const response = await fetch(`${API_BASE}/weekday.php?date=${date}`);
                 const data = await response.json();
-                document.getElementById('weekday-result').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                document.getElementById('result2').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
             } catch (error) {
-                document.getElementById('weekday-result').innerHTML = `Ошибка: ${error.message}`;
+                document.getElementById('result2').innerHTML = `<div class="error">Ошибка: ${error.message}</div>`;
             }
         }
         
         async function getDateDiff() {
             const date1 = document.getElementById('date1').value;
             const date2 = document.getElementById('date2').value;
-            if (!date1 || !date2) {
-                alert('Выберите обе даты');
-                return;
-            }
             try {
-                const response = await fetch(`${API_BASE}diff.php?date1=${date1}&date2=${date2}`);
+                const response = await fetch(`${API_BASE}/diff.php?date1=${date1}&date2=${date2}`);
                 const data = await response.json();
-                document.getElementById('diff-result').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                document.getElementById('result3').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
             } catch (error) {
-                document.getElementById('diff-result').innerHTML = `Ошибка: ${error.message}`;
+                document.getElementById('result3').innerHTML = `<div class="error">Ошибка: ${error.message}</div>`;
             }
         }
         
         async function getCities() {
             const country = document.getElementById('country').value;
             try {
-                const response = await fetch(`${API_BASE}cities.php?country=${encodeURIComponent(country)}`);
+                const response = await fetch(`${API_BASE}/cities.php?country=${encodeURIComponent(country)}`);
                 const data = await response.json();
-                document.getElementById('cities-result').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                document.getElementById('result4').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
             } catch (error) {
-                document.getElementById('cities-result').innerHTML = `Ошибка: ${error.message}`;
+                document.getElementById('result4').innerHTML = `<div class="error">Ошибка: ${error.message}</div>`;
             }
         }
         
-        async function getAllItems() {
+        async function getAllRecords() {
             try {
-                const response = await fetch(`${API_BASE}index.php?action=all`);
+                const response = await fetch(`${API_BASE}/index.php?action=all`);
                 const data = await response.json();
-                document.getElementById('crud-result').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                document.getElementById('result5').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
             } catch (error) {
-                document.getElementById('crud-result').innerHTML = `Ошибка: ${error.message}`;
+                document.getElementById('result5').innerHTML = `<div class="error">Ошибка: ${error.message}</div>`;
             }
         }
         
-        async function getItem() {
-            const id = document.getElementById('item-id').value;
+        async function getRecord() {
+            const id = document.getElementById('getRecordId').value;
             if (!id) {
                 alert('Введите ID');
                 return;
             }
             try {
-                const response = await fetch(`${API_BASE}index.php?action=get&id=${id}`);
+                const response = await fetch(`${API_BASE}/index.php?action=get&id=${id}`);
                 const data = await response.json();
-                document.getElementById('crud-result').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                document.getElementById('result5').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
             } catch (error) {
-                document.getElementById('crud-result').innerHTML = `Ошибка: ${error.message}`;
+                document.getElementById('result5').innerHTML = `<div class="error">Ошибка: ${error.message}</div>`;
             }
         }
         
-        async function deleteItem() {
-            const id = document.getElementById('item-id').value;
+        async function updateRecord() {
+            const id = document.getElementById('updateId').value;
+            const title = document.getElementById('updateTitle').value;
+            const content = document.getElementById('updateContent').value;
+            
+            if (!id || !title || !content) {
+                alert('Заполните ID, заголовок и содержание');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/index.php?action=edit&id=${id}`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ title, content })
+                });
+                const data = await response.json();
+                document.getElementById('result5').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                
+                if (data.success) {
+                    document.getElementById('updateTitle').value = '';
+                    document.getElementById('updateContent').value = '';
+                    document.getElementById('updateId').value = '';
+                }
+            } catch (error) {
+                document.getElementById('result5').innerHTML = `<div class="error">Ошибка: ${error.message}</div>`;
+            }
+        }
+        
+        async function deleteRecord() {
+            const id = document.getElementById('deleteId').value;
             if (!id) {
                 alert('Введите ID');
                 return;
             }
-            if (!confirm('Удалить запись?')) return;
-            try {
-                const response = await fetch(`${API_BASE}index.php?action=del&id=${id}`);
-                const data = await response.json();
-                document.getElementById('crud-result').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-            } catch (error) {
-                document.getElementById('crud-result').innerHTML = `Ошибка: ${error.message}`;
+            
+            if (confirm('Вы уверены, что хотите удалить запись?')) {
+                try {
+                    const response = await fetch(`${API_BASE}/index.php?action=del&id=${id}`);
+                    const data = await response.json();
+                    document.getElementById('result5').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                    
+                    if (data.success) {
+                        document.getElementById('deleteId').value = '';
+                    }
+                } catch (error) {
+                    document.getElementById('result5').innerHTML = `<div class="error">Ошибка: ${error.message}</div>`;
+                }
             }
         }
         
-        async function getWeather() {
-            try {
-                const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=59.9386&longitude=30.2141&current_weather=true');
-                const data = await response.json();
-                const weather = data.current_weather;
-                document.getElementById('weather-result').innerHTML = `
-                    <strong>Температура:</strong> ${weather.temperature}°C<br>
-                    <strong>Ветер:</strong> ${weather.windspeed} км/ч<br>
-                    <strong>Направление:</strong> ${weather.winddirection}°<br>
-                    <strong>Время:</strong> ${weather.time}
-                `;
-            } catch (error) {
-                document.getElementById('weather-result').innerHTML = `Ошибка: ${error.message}`;
-            }
-        }
+        loadWeather();
     </script>
 </body>
 </html>

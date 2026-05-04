@@ -1,4 +1,5 @@
 <?php
+
 function callAPI($method, $url, $data = false) {
     $curl = curl_init();
     
@@ -9,7 +10,12 @@ function callAPI($method, $url, $data = false) {
                 curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
             break;
         case "PUT":
-            curl_setopt($curl, CURLOPT_PUT, 1);
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+            if ($data)
+                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
+            break;
+        case "DELETE":
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
             break;
         default:
             if ($data)
@@ -26,13 +32,9 @@ function callAPI($method, $url, $data = false) {
     return json_decode($result, true);
 }
 
-function sendJsonResponse($data, $statusCode = 200) {
+function sendResponse($data, $statusCode = 200) {
     http_response_code($statusCode);
-    header('Content-Type: application/json');
-    header('Access-Control-Allow-Origin: *');
-    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
-    header('Access-Control-Allow-Headers: Content-Type');
-    echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    echo json_encode($data, JSON_UNESCAPED_UNICODE);
     exit;
 }
 ?>
